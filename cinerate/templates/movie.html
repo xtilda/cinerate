@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% from '_cards.html' import cards %}
+{% from '_entry_form.html' import entry_form with context %}
+{% block title %}{{ movie.title }} — CineRate{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('main.films') }}">← Back to films</a>
+<section class="movie-layout">
+    <aside>
+        {{ cards([movie]) }}
+        {% if g.user %}
+        {% for kind,label in [('favorite','Favourites'),('watchlist','Watchlist')] %}
+        <form class="shelf-form" method="post" action="{{ url_for('main.shelf',movie_id=movie.id,kind=kind) }}">
+            <input type="hidden" name="csrf" value="{{ csrf() }}">
+            <button class="button {{ 'selected' if kind in shelves else 'secondary' }}">{{ '✓ Remove from ' if kind in shelves else '+ Add to ' }}{{ label }}</button>
+        </form>
+        {% endfor %}
+        {% endif %}
+    </aside>
+    <div>
+        <p class="eyebrow">{{ movie.year or 'Year unavailable' }} · {{ (movie.runtime|string)+' min' if movie.runtime else 'Runtime unavailable' }} · {{ movie.language|upper if movie.language else 'Language unavailable' }}</p>
+        <h1>{{ movie.title }}</h1>
+        <p class="director">Directed by <strong>{{ movie.director if movie.director!='Unknown' else 'Not available' }}</strong></p>
+        <div class="tags">
+            {% for genre in genres %}<a href="{{ url_for('main.films',genre=genre) }}">{{ genre }}</a>{% endfor %}
+        </div>
+        <p class="synopsis">{{ movie.description }}</p>
+        <div class="rating-block">
+            <strong>{{ '%.1f'|format(movie.rating/2) if movie.rating is not none else '—' }} <span>★</span></strong>
+            <p>Catalogue rating / 5<br>{{ '{:,}'.format(movie.votes)+' votes' if movie.votes else 'Vote count unavailable' }}</p>
+        </div>
+        {% if cast %}<p class="eyebrow">Cast</p><p class="muted">{{ cast|join(' · ') }}</p>{% endif %}
+        <p class="source-note">Data source: <a href="{{ movie.source_url }}" target="_blank" rel="noopener noreferrer">{{ 'TMDB' if 'themoviedb' in movie.source_url else 'Wikipedia' }}</a>{% if movie.updated_at %} · {{ movie.updated_at }}{% endif %}{% if movie.poster and movie.poster.startswith('/static/posters/') %} · Artwork: <a href="https://www.themoviedb.org/movie/{{ movie.id }}" target="_blank" rel="noopener noreferrer">TMDB</a>{% endif %}</p>
+        <div class="log-panel">
+            <h2>Log a viewing</h2>
+            {% if g.user %}
+            {{ entry_form(movie.id,today) }}
+            {% else %}
+            <p><a class="subtle-link" href="{{ url_for('main.auth',mode='login') }}">Sign in</a> to log a viewing, rate this film or save it for later.</p>
+            {% endif %}
+        </div>
+        {% if entries %}
+        <h2>Your viewings</h2>
+        {% for entry in entries %}
+        <article class="entry">
+            <div class="section-head"><span>{{ entry.watched_on }}</span><strong>{{ entry.score if entry.score is not none else 'Unrated' }}{% if entry.score is not none %} ★{% endif %}</strong></div>
+            {% if entry.spoiler %}<details><summary>Your review contains spoilers</summary><p class="review">{{ entry.review }}</p></details>{% else %}<p class="review">{{ entry.review }}</p>{% endif %}
+            <details class="edit-entry"><summary>Edit this viewing</summary>{{ entry_form(movie.id,today,entry) }}</details>
+        </article>
+        {% endfor %}
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% from '_cards.html' import cards %}
+{% block content %}
+    <div class="page-heading">
+        <p class="eyebrow">RECOMMENDATIONS</p>
+        <h1>Recommended films</h1>
+        <p>Based on your ratings, genres, directors and shared keywords.</p>
+        <p class="muted">Rate a few favourites to make these more personal. Films you have logged are excluded.</p>
+    </div>{{ cards(films) }}{% endblock %}

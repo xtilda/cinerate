@@ -1,0 +1,26 @@
+{% macro entry_form(movie_id,today,entry=None) %}
+{% set prefix = entry.id if entry else 'new' %}
+<form method="post" action="{{ url_for('main.edit_entry',entry_id=entry.id) if entry else url_for('main.log',movie_id=movie_id) }}">
+    <input type="hidden" name="csrf" value="{{ csrf() }}">
+    <div class="form-row">
+        <div class="field">
+            <label for="date-{{ prefix }}">Watched on</label>
+            <input id="date-{{ prefix }}" type="date" name="watched_on" value="{{ entry.watched_on if entry else today }}" max="{{ today }}" required>
+        </div>
+        <div class="field">
+            <label for="score-{{ prefix }}">Your rating</label>
+            <select id="score-{{ prefix }}" name="score">
+                <option value="">No rating</option>
+                {% for i in range(11) %}
+                <option value="{{ i/2 }}" {% if entry and entry.score==i/2 %}selected{% endif %}>{{ i/2 }} ★</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <label for="review-{{ prefix }}">Your thoughts</label>
+    <textarea id="review-{{ prefix }}" name="review" rows="4" maxlength="5000" placeholder="Write a review (optional)">{{ entry.review if entry else '' }}</textarea>
+    <label class="checkbox"><input type="checkbox" name="spoiler" {% if entry and entry.spoiler %}checked{% endif %}>Contains spoilers</label>
+    <button class="button">{{ 'Update viewing' if entry else 'Save to diary' }}</button>
+    {% if not entry %}<p class="fine">Saving adds a new viewing, including rewatches.</p>{% endif %}
+</form>
+{% endmacro %}

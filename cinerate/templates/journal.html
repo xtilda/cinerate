@@ -1,0 +1,71 @@
+{% extends "base.html" %}{% from '_cards.html' import cards %}
+{% block content %}
+    <div class="section-head page-heading">
+        <div>
+            <p class="eyebrow">ACCOUNT: {{ g.user.username|upper }}</p>
+            <h1>Film diary</h1>
+        </div>
+        <a class="button secondary" href="{{ url_for('main.export') }}">Export diary ↓</a>
+    </div>
+    <div class="stats">
+        <div>
+            <strong>{{ stats.films }}</strong>
+            <span>FILMS WATCHED</span>
+        </div>
+        <div>
+            <strong>{{ stats.logs }}</strong>
+            <span>DIARY ENTRIES</span>
+        </div>
+        <div>
+            <strong>{{ stats.average if stats.average is not none else '—' }}</strong>
+            <span>AVERAGE STARS</span>
+        </div>
+        <div>
+            <strong>{{ shelves.watchlist|length }}</strong>
+            <span>ON WATCHLIST</span>
+        </div>
+    </div>
+    {% if top_genres %}
+        <div class="tags">
+            <span>Top genres</span>{% for genre,count in top_genres %}<a href="{{ url_for('main.films',genre=genre) }}">{{ genre }} · {{ count }}</a>{% endfor %}</div>{% endif %}<section class="journal-section">
+            <div class="section-head">
+                <h2>Viewing history</h2>
+                <a class="subtle-link" href="{{ url_for('main.films') }}">Log another film ↗</a>
+            </div>
+            {% for entry in entries %}
+                <article class="diary-row">
+                    <div class="date-tile">
+                        <strong>{{ entry.watched_on[8:] }}</strong>
+                        <span>{{ entry.watched_on[:7] }}</span>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('main.movie',movie_id=entry.movie_id) }}">
+                            <h3>
+                                {{ entry.title }} <small>{{ entry.year }}</small>
+                            </h3>
+                        </a>
+                        <p class="muted">{{ entry.director }} · {{ entry.score if entry.score is not none else 'Unrated' }}{% if entry.score is not none %} ★{% endif %}</p>{% if entry.spoiler %}<details>
+                            <summary>Spoiler review</summary>
+                            <p class="review">{{ entry.review }}</p>
+                        </details>{% else %}<p class="review">{{ entry.review }}</p>{% endif %}</div>
+                    <form method="post"
+                          action="{{ url_for('main.delete_entry',entry_id=entry.id) }}"
+                          data-confirm="Delete this diary entry?">
+                        <input type="hidden" name="csrf" value="{{ csrf() }}">
+                        <button class="text-button" aria-label="Delete viewing of {{ entry.title }}">Delete</button>
+                    </form>
+                </article>
+{% else %}
+    <div class="empty">
+        <h2>No viewings yet</h2>
+        <p>Open a film and log a viewing to start your diary.</p>
+        <a class="button" href="{{ url_for('main.films') }}">Find a film ↗</a>
+    </div>
+{% endfor %}
+</section>
+<section class="journal-section">
+    <h2>Favourites</h2>
+    {{ cards(shelves.favorite) }}
+</section>
+<section class="journal-section" id="watchlist">
+    <h2>Watchlist</h2>{{ cards(shelves.watchlist) }}</section>{% endblock %}

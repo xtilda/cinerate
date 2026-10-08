@@ -1,0 +1,65 @@
+{% extends "base.html" %}{% from '_cards.html' import cards %}{% block title %}Double features — CineRate{% endblock %}{% block content %}<div class="page-heading">
+<h1>Double features</h1>
+<p>Pairs matched by shared themes, directors or genre. Total time includes a 10-minute break.</p>
+</div>
+<form class="filters" method="get">
+    <label>Available time<select name="minutes">{% for value in [100,120,150,180,210,240,270,300,360,480] %}<option value="{{ value }}" {% if value==minutes %}selected{% endif %}>{{ value//60 }}h {{ value%60 }}m</option>{% endfor %}</select>
+    </label>
+    <label>
+        Genre<select name="genre">
+        <option value="">Any genre</option>{% for item in genres %}<option {% if item==genre %}selected{% endif %}>{{ item }}</option>{% endfor %}</select>
+</label>
+<button class="button">Find pairs</button>
+</form>{% if g.user %}<p class="fine">Films in your viewing history are excluded.</p>{% endif %}<div class="session-layout">{% for pair in pairs %}<article class="session-pair">
+<div class="pair-info">
+    <h3>Session {{ loop.index }}</h3>
+    <span>{{ pair.minutes//60 }}h {{ pair.minutes%60 }}m total</span>
+</div>
+<p>{{ pair.reason }}</p>{{ cards(pair.films) }}{% if g.user %}<form method="post"
+      action="{{ url_for('main.save_session') }}">
+    <input type="hidden" name="csrf" value="{{ csrf() }}">
+    <input type="hidden" name="movie_a" value="{{ pair.films[0].id }}">
+    <input type="hidden" name="movie_b" value="{{ pair.films[1].id }}">
+    <label>
+        Session name<input name="title"
+       maxlength="100"
+       value="Session {{ loop.index }}"
+       required>
+    </label>
+    <button class="button">Save session</button>
+</form>{% else %}<a class="subtle-link"
+   href="{{ url_for('main.auth',mode='login') }}">Sign in to save this pair</a>{% endif %}</article>{% else %}<div class="empty">
+<h2>No matching pair</h2>
+<p>Increase your time budget or choose another genre.</p>
+</div>
+{% endfor %}
+</div>
+{% if g.user %}
+    <section class="journal-section saved-section" id="saved">
+        <div class="section-head">
+            <h2>Saved sessions</h2>
+        </div>
+        <div class="session-layout">
+            {% for item in saved %}
+                <article class="session-pair">
+                    <div class="pair-info">
+                        <h3>{{ item.title }}</h3>
+                        <span>{{ item.minutes }}m including break</span>
+                    </div>
+                    {{ cards(item.films) }}
+                    <form method="post"
+                          action="{{ url_for('main.delete_session',session_id=item.id) }}"
+                          data-confirm="Delete this saved session?">
+                        <input type="hidden" name="csrf" value="{{ csrf() }}">
+                        <button class="text-button">Delete session</button>
+                    </form>
+                </article>
+            {% else %}
+                <div class="empty">
+                    <p>No saved sessions.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
+{% endblock %}

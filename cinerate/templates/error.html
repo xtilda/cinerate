@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+    <section class="empty">
+        <p class="eyebrow">{{ error.code }}</p>
+        <h1>Request could not be completed</h1>
+        <p>{{ error.description if error.code!=500 else 'Something went wrong. Please try again.' }}</p>
+        <a class="button" href="{{ url_for('main.index') }}">Back to CineRate</a>
+    </section>
+{% endblock %}

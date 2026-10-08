@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#080d17">
+        <meta name="description"
+              content="Film catalogue, watch diary, recommendations and double-feature planning.">
+        <title>{% block title %}CineRate{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+        <script defer src="{{ url_for('static',filename='app.js') }}"></script>
+    </head>
+    <body>
+        <header>
+            <div class="header-inner">
+                <a class="wordmark" href="{{ url_for('main.index') }}">
+                    <span class="brand-icon">▥</span>cine<span>rate</span>
+                </a>
+                <nav class="main-nav" aria-label="Main navigation">
+                    <a class="{{ 'active' if request.endpoint=='main.index' }}"
+                       href="{{ url_for('main.index') }}">Overview</a>
+                    <a class="{{ 'active' if request.endpoint=='main.films' }}"
+                       href="{{ url_for('main.films') }}">Films</a>
+                    <a class="{{ 'active' if request.endpoint=='main.sessions' }}"
+                       href="{{ url_for('main.sessions') }}">Double features</a>{% if g.user %}<a class="{{ 'active' if request.endpoint=='main.discover' }}"
+   href="{{ url_for('main.discover') }}">Discover</a>{% endif %}</nav>
+                <div class="header-account">{% if g.user %}<a href="{{ url_for('main.journal') }}">My diary</a>
+                    <span class="avatar">{{ g.user.username[0]|upper }}</span>
+                    <form method="post" action="{{ url_for('main.logout') }}">
+                        <input type="hidden" name="csrf" value="{{ csrf() }}">
+                        <button class="text-button">Sign out</button>
+                    </form>{% else %}<a href="{{ url_for('main.auth',mode='login') }}">Sign in</a>
+                    <a class="button small"
+                       href="{{ url_for('main.auth',mode='register') }}">Create account</a>{% endif %}</div>
+        </div>
+    </header>
+    <main>{% for category,message in get_flashed_messages(with_categories=true) %}<div class="notice {{ category }}" role="status">{{ message }}</div>{% endfor %}{% block content %}{% endblock %}</main>
+    <footer>
+        <a class="wordmark" href="/">cinerate</a>
+        <span>Film catalogue · Private diary</span>
+        <span>Film data: TMDB & Wikipedia · Artwork credits on film pages</span>
+    </footer>
+</body>
+</html>

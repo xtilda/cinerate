@@ -1,0 +1,38 @@
+{% extends "base.html" %}{% from '_cards.html' import cards %}{% block title %}Films — CineRate{% endblock %}{% block content %}<div class="page-heading">
+<p class="eyebrow">CATALOGUE</p>
+<h1>Films</h1>
+<p>{{ '{:,}'.format(count) }} films in the catalogue.</p>
+</div>
+<form class="filters" action="{{ url_for('main.films') }}">
+    <label class="search-label">
+        Film or director<input type="search"
+       name="q"
+       value="{{ q }}"
+       placeholder="Search film or director">
+    </label>
+    <label>
+        Genre<select name="genre">
+        <option value="">All genres</option>{% for item in genres %}<option {% if item==genre %}selected{% endif %}>{{ item }}</option>{% endfor %}</select>
+</label>
+<label>
+    Year<input type="number"
+       name="year"
+       value="{{ year }}"
+       min="1888"
+       max="2100"
+       placeholder="Any year">
+</label>
+<label>Sort<select name="sort">{% for value,label in [('rating','Highest rated'),('popular','Most popular'),('newest','Newest first'),('title','A–Z')] %}<option value="{{ value }}" {% if value==sort %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+</label>
+<label>
+    Max runtime<input type="number"
+       name="max_runtime"
+       min="40"
+       max="600"
+       value="{{ max_runtime }}"
+       placeholder="Minutes">
+</label>
+<button class="button">Search</button>
+</form>{{ cards(films) }}<nav class="pagination" aria-label="Film pages">{% if page>1 %}<a class="button secondary"
+   href="{{ url_for('main.films',q=q,genre=genre,year=year,sort=sort,max_runtime=max_runtime,page=page-1) }}">← Previous</a>{% endif %}<span>Page {{ page }} of {{ pages }}</span>{% if page<pages %}<a class="button secondary"
+   href="{{ url_for('main.films',q=q,genre=genre,year=year,sort=sort,max_runtime=max_runtime,page=page+1) }}">Next →</a>{% endif %}</nav>{% endblock %}

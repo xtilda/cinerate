@@ -1,0 +1,56 @@
+{% extends "base.html" %}{% from '_cards.html' import cards %}
+{% block content %}
+    <div class="dashboard-intro">
+        <div>
+            <h1>{{ 'Your film dashboard' if g.user else 'Film catalogue' }}</h1>
+            <p>{{ 'Track viewings, manage your watchlist and plan what to watch next.' if g.user else 'Browse films. Create an account to keep your diary and watchlist.' }}</p>
+        </div>
+        <div class="intro-actions">
+            <a class="button secondary" href="{{ url_for('main.films') }}">Search films</a>
+            <a class="button"
+               href="{{ url_for('main.journal') if g.user else url_for('main.auth',mode='register') }}">{{ 'Open diary' if g.user else 'Create account' }}</a>
+        </div>
+    </div>
+{% if g.user %}
+    <div class="overview">
+        <div class="stat-card">
+            <span>{{ 'Films watched' if g.user else 'Films in catalogue' }}</span>
+            <strong>{{ stats.films if g.user else '{:,}'.format(count) }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>{{ 'Diary entries' if g.user else 'Added since 2020' }}</span>
+            <strong>{{ stats.logs if g.user else recent_count }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>{{ 'Average rating' if g.user else 'Browse by' }}</span>
+            <strong>{{ (stats.average if stats.average is not none else '—') if g.user else 'Genre' }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>{{ 'On your watchlist' if g.user else 'Plan a session' }}</span>
+            <strong>{{ watchlist_count if g.user else '2 films' }}</strong>
+        </div>
+    </div>
+{% endif %}
+    <section class="film-section">
+        <div class="section-head">
+            <h2>Recent additions</h2>
+            <a class="subtle-link" href="{{ url_for('main.films',sort='newest') }}">Browse recent films →</a>
+        </div>{{ cards(recent) }}</section>
+    <div class="feature-banner">
+        <div>
+            <p class="eyebrow">DOUBLE FEATURES</p>
+            <h2>Double-feature planner</h2>
+            <p>Set a time budget and genre. Get film pairs connected by themes, directors or genre, with a 10-minute break included.</p>
+        </div>
+        <a class="button" href="{{ url_for('main.sessions') }}">Build a session →</a>
+    </div>
+{% if watchlist %}<section class="film-section">
+            <div class="section-head">
+                <h2>Your watchlist</h2>
+                <a class="subtle-link" href="{{ url_for('main.journal') }}#watchlist">View watchlist →</a>
+            </div>{{ cards(watchlist) }}</section>{% endif %}<section class="film-section">
+            <div class="section-head">
+                <h2>Popular films</h2>
+                <span class="muted">Sorted by catalogue vote count</span>
+                <a class="subtle-link" href="{{ url_for('main.films',sort='popular') }}">View all →</a>
+            </div>{{ cards(films) }}</section>{% endblock %}

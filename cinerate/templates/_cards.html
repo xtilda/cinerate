@@ -1,0 +1,22 @@
+{% macro cards(films) %}
+    <div class="film-grid">
+        {% for film in films %}
+            <a class="film-card" href="{{ url_for('main.movie',movie_id=film.id) }}">
+                <div class="poster">
+                    <div class="poster-fallback">
+                        <span>▥</span>
+                        <strong>{{ film.title }}</strong>
+                        <small>{{ film.year or 'Year unknown' }}</small>
+                    </div>{% if film.poster %}<img src="{{ film.poster }}" alt="{{ film.title }} poster" loading="lazy">{% endif %}{% if film.year and film.year>=2020 %}<span class="poster-badge">{{ film.year }}</span>{% endif %}</div>
+                    <div class="card-label">
+                        <h3>{{ film.title }}</h3>
+                        <span>{{ film.year or '—' }}</span>
+                    </div>
+                    <p>{{ film.director if film.director!='Unknown' else 'Director unavailable' }}</p>
+                    <div class="card-rating">{% if film.rating is not none %}<span class="stars">★ {{ '%.1f'|format(film.rating/2) }}</span>{% else %}<span>Unrated</span>{% endif %}{% if film.runtime %}<span class="duration">{{ film.runtime }}m</span>{% endif %}</div>{% if film.reason %}<p class="reason">{{ film.reason }}</p>{% endif %}</a>{% else %}<div class="empty">
+                        <h2>No films found</h2>
+                        <p>Try another filter or search.</p>
+                    </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
