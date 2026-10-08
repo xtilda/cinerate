@@ -1,0 +1,11 @@
+{
+  "retrieved_at": "2026-10-08",
+  "total": 5985,
+  "added_wikipedia_2020s": 1151,
+  "tmdb_refreshed": 92,
+  "poster_count": 4336,
+  "local_posters": 109,
+  "wikipedia_repository": "https://github.com/prust/wikipedia-movie-data",
+  "notes": "TMDB refreshed records are a dated public-page snapshot. Other catalogue metadata is historical. Ratings with unavailable vote counts are not labelled popular.",
+  "stale_wikipedia_records_replaced": 2
+}

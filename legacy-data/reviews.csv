@@ -1,0 +1,16 @@
+review_id	user_id	movie_id	comment	created_at
+1	1	38757	Masterpiece	2025-04-08
+2	2	559	Loved it	2025-04-19
+3	3	559	Meh	2025-03-12
+4	4	49529	Great cast	2025-03-10
+5	5	285	Solid film	2025-03-16
+6	6	206647	Underrated	2025-03-04
+7	7	49026	Loved it	2025-04-07
+8	8	38757	Masterpiece	2025-03-16
+9	9	767	Meh	2025-03-10
+10	10	559	Fast-paced	2025-02-27
+11	11	19995	Meh	2025-06-01
+12	12	559	Would rewatch	2025-05-02
+13	13	285	Meh	2025-03-25
+14	14	559	Meh	2025-03-14
+15	15	99861	Would rewatch	2025-03-15
